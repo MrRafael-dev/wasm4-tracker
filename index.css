@@ -1,0 +1,42 @@
+/**
+ * Remover espaçamento debaixo das abas.
+ */
+.tabs, .tabs:not(:last-child) {
+	margin-bottom: unset;
+	margin-top: 1.5em;
+}
+
+/**
+ * Remover espaçamento debaixo do subtítulo.
+ */
+.subtitle, .subtitle:not(:last-child) {
+	margin-bottom: 0.5rem;
+}
+
+/**
+ * Manter a cor dos elementos `<pre>` como a mesma usada no
+ *tema do editor de código do CodeMirror.
+ */
+pre {
+	background-color: #1F1F1F;
+}
+
+/**
+ * Retirar todos os estilos deste elemento para não dar conflitos
+ * com o tema usado pelo editor de código do CodeMirror.
+ */
+.number {
+	all: unset;
+}
+
+/**
+ * Impede que um determinado conteúdo seja selecionado.
+ */
+.is-not-selectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

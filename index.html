@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Metadados principais da página. -->
+	  <meta charset="UTF-8"/>
+	  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- Favicon. -->
+    <link rel="icon" type="image/png" href="./favicon.png"/>
+
+    <!-- Título da página. -->
+    <title>WASM-4 Tracker</title>
+
+    <!-- Folhas de estilo. -->
+    <link rel="stylesheet" href="./dependencies/bulma/bulma.css"/>
+    <link rel="stylesheet" href="./dependencies/codemirror/codemirror.min.css"/>
+    <link rel="stylesheet" href="./dependencies/codemirror/friendship-bracelet.css"/>
+    <link rel="stylesheet" href="./dependencies/prism/prism.css"/>
+    <link rel="stylesheet" href="./index.css"/>
+
+    <!-- Scripts. -->
+    <script src="./dependencies/tinysprite/tinysprite.tracker.js"></script>
+    <script src="./dependencies/codemirror/codemirror.min.js"></script>
+    <script src="./dependencies/codemirror/javascript.min.js"></script>
+    <script src="./dependencies/prism/prism.js" data-manual></script>
+  </head>
+  <body>
+<!-- Template de exemplo. É carregado ao entrar na página. -->
+<template id="template-example">/*
+WASM-4 Tracker
+A very minimalistic and naive attempt
+at making an audio tool for WASM-4.
+  
+Press "Run" and enjoy!
+*/
+
+// Setup instrument and ticks for the first parts...
+  instrument(0)
+  ticks(6)
+
+// Beginning (1/2)...
+  db(18, 18, 19, 21, 21, 19, 18, 16)
+  db(14, 14, 16, 18, 18)
+  wait(1)
+  db(16, 16)
+  wait(2)
+
+// Beginning (2/2)...
+  db(18, 18, 19, 21, 21, 19, 18, 16)
+  db(14, 14, 16, 18, 16)
+  wait(1)
+  db(14, 14)
+  wait(2)
+
+// Middle of music, speed will change
+// a little in order to catch up...
+  db(16, 16, 18, 14)
+  ticks(3)
+
+  db(16)
+  wait(1)
+  db(18)
+  db(19)
+  db(18)
+  wait(1)
+  db(14)
+  wait(1)
+  db(16)
+  wait(1)
+  db(18)
+  db(19)
+  db(18)
+  wait(1)
+
+  db(16)
+  wait(2)
+  db(14)
+  wait(1)
+  db(16)
+  wait(1)
+  db(21)
+  wait(2)
+
+// Ending...
+  ticks(6)
+  db(18, 18, 19, 21, 21, 19, 18, 16)
+  db(14, 14, 16, 18, 16)
+  wait(1)
+  db(14, 14)
+  wait(2)
+</template>
+
+    <section class="section">
+      <div class="container">
+        <div class="columns is-centered">
+          
+          <!-- Seção à esquerda da página. -->
+          <div class="column is-7">
+
+            <!-- Título da página + botões de ações rápidas. -->
+            <h1 class="title">WASM-4 Tracker
+              <button id="run-button" class="button is-primary" onclick="run()">Run</button>
+              <button id="stop-button" class="button is-primary" onclick="stop()">Stop</button>
+              <button id="clipboard-button" class="button is-info is-outlined" onclick="copyToClipboard(this)" data-default-message="Export to clipboard" data-success-message="👍 Copied successfully!">Export to clipboard</button>
+            </h1>
+
+            <!-- Controles de navegação de abas. -->
+            <div class="tabs is-different">
+              <ul id="main-tab">
+                
+                <li class="is-active" data-tab="#code-editor" onclick="setActiveTab(this)">
+                  <a>Code</a>
+                </li>
+
+                <li data-tab="#export-area" onclick="setActiveTab(this)">
+                  <a>View export</a>
+                </li>
+                
+              </ul>
+            </div> 
+            <!-- Editor de código. -->
+            <div id="code-editor"></div>
+
+            <!-- Exportação de código. -->
+            <pre id="export-area" class="is-hidden"><code id="export-code" class="language-ts"></code></pre>
+          </div>
+
+          <!-- Descrição e documentação geral. -->
+          <div class="column is-5">
+            <div class="content">
+              <h2>A Simple WASM-4 Tracker</h2>
+              <p>Not much to say for now. But... yeah, it's a simple tracker.</p>
+              <p>And it <em>kinda</em> works!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controles de inserção automática de notas usando o teclado. -->
+        <div class="columns">
+          <div class="column is-7">
+            <h2 class="subtitle">
+              Keyboard
+
+              <!-- Seletor de instrumento. -->
+              <div class="select is-small">
+                <select id="keyboard-instrument" onchange="toggleKeyboardInstrument(this)">
+                  <option value="0">Pulse (mode 0)</option>
+                  <option value="1">Pulse (mode 1)</option>
+                  <option value="2">Pulse (mode 2)</option>
+                  <option value="3">Pulse (mode 3)</option>
+                  <option value="4">Square</option>
+                  <option value="5">Noise</option>
+                </select>
+              </div>
+
+              <!-- Seletor de oitavas. -->
+              <div class="select is-small">
+                <select id="keyboard-octave" onchange="toggleKeyboardOctave(this)">
+                  <option value="0">Octave 1 (low)</option>
+                  <option value="1">Octave 2 (high)</option>
+                </select>
+              </div>
+
+              <!-- Ativa e desativa os controles instrumentais do teclado. -->
+              <button id="keyboard-switch" class="button is-outlined is-small" onclick="toggleKeyboardControls(this)">
+                KBD ON / OFF
+              </button>
+
+              <!-- Ativa e desativa a inserção automática de código pelas notas do teclado. -->
+              <button id="keyboard-auto-insert-switch" class="button is-outlined is-small" onclick="toggleKeyboardAutoInsert(this)">
+                AUTO ON / OFF
+              </button>
+
+              <!-- Ativa e desativa a inserção automática do tempo de espera de cada nota do teclado. -->
+              <button id="keyboard-wait-insert-switch" class="button is-outlined is-small" onclick="toggleKeyboardWaitInsert(this)">
+                WAIT ON / OFF
+              </button>
+
+              <!-- Contador de tempo de espera. Quando clicado, seu valor é resetado. -->
+              <button id="keyboard-wait-timer" class="button is-outlined is-small" onclick="resetWaitTicks()">
+                WAIT 0000
+              </button>
+            </h2>
+
+            <!-- Exibição da última nota pressionada. -->
+            <span id="keyboard-last-note" class="tag is-info is-not-selectable">Note 00 / 0x00</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Script principal. -->
+    <script src="./index.js"></script>
+	</body>
+</html>
