@@ -2,10 +2,10 @@
  * @name TinySprite Track Script for WASM-4
  * @author Mr.Rafael
  * @license MIT
- * @version 1.0.7
+ * @version 1.0.8
  *
  * @description
- * Função que ajudam a entender e criar trilhas sonoras para a classe `Track`.
+ * Funções que ajudam a entender e criar trilhas sonoras para a classe `Track`.
  */
 
 /** Opcodes usados pelas trilhas. */
@@ -547,8 +547,8 @@ class Track {
   
 	  // Não executar enquanto estiver em um período de espera...
 	  if(this.wait > 0) {
-		this.wait -= 1;
-		return;
+			this.wait -= 1;
+			return;
 	  }
   
 	  // Executar código (com recursão de até 255 loops)...
@@ -569,7 +569,7 @@ class Track {
 		  this.cursor += 1;
   
 		  this.onHalt();
-		  break;
+		  continue;
 		}
   
 		// Salta para um outro offset.
@@ -582,24 +582,24 @@ class Track {
 		// é igual a `true`.
 		if(opcode === Opcode.IFJUMP) {
 		  if(this.accumulator === true) {
-			this.cursor = loadu16(offset + 1);
-			continue;
+				this.cursor = loadu16(offset + 1);
+				continue;
 		  }
 				  
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
 
 		// Salta para um outro offset, quando o valor do acumulador
 		// é igual a `false`.
 		if(opcode === Opcode.IFNOTJUMP) {
 		  if(this.accumulator === false) {
-			this.cursor = loadu16(offset + 1);
-			continue;
+				this.cursor = loadu16(offset + 1);
+				continue;
 		  }
 				  
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
 
     // Salva um offset para saltar depois.
@@ -619,24 +619,24 @@ class Track {
     // é igual a `true`.
 		if(opcode === Opcode.IFREPEAT) {
 		  if(this.accumulator === true) {
-			this.cursor = this.section;
-			continue;
+				this.cursor = this.section;
+				continue;
 		  }
 				  
 		  this.cursor += 1;
-		  break;
+		  continue;
 		}
 
     // Salta para o offset salvo, quando o valor do acumulador
     // é igual a `false`.
 		if(opcode === Opcode.IFNOTREPEAT) {
 		  if(this.accumulator === false) {
-			this.cursor = this.section;
-			continue;
+				this.cursor = this.section;
+				continue;
 		  }
 				  
 		  this.cursor += 1;
-		  break;
+		  continue;
 		}
   
 		// Solicita a execução de uma syscall.
@@ -653,21 +653,21 @@ class Track {
 		if(opcode === Opcode.SET) {
 		  this.register = loadu8(offset + 1);
 		  this.cursor += 2;
-		  continue;
+		  break;
 		}
   
 		// Adiciona um valor para o registrador.
 		if(opcode === Opcode.ADD) {
 		  this.register += loadu8(offset + 1);
 		  this.cursor += 2;
-		  continue;
+		  break;
 		}
   
 		// Subtrai um valor do registrador.
 		if(opcode === Opcode.SUB) {
 		  this.register -= loadu8(offset + 1);
 		  this.cursor += 2;
-		  continue;
+		  break;
 		}
   
 		// Compara se o registrador é igual ao valor.
@@ -675,7 +675,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register === value;
 		  this.cursor += 2;
-		  continue;
+		  break;
 		}
   
 		// Compara se o registrador é menor que o valor.
@@ -683,7 +683,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register < value;
 		  this.cursor += 2;
-		  continue;
+		  break;
 		}
   
 		// Compara se o registrador é maior que o valor.
@@ -691,7 +691,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register > value;
 		  this.cursor += 2;
-		  continue;
+		  break;
 		}
   
 		// Compara se o registrador é menor ou igual que o valor.
@@ -699,7 +699,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register <= value;
 		  this.cursor += 2;
-		  continue;
+		  break;
 		}
   
 		// Compara se o registrador é maior ou igual que o valor.
@@ -707,7 +707,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register >= value;
 		  this.cursor += 2;
-		  continue;
+		  break;
 		}
   
 		// Define uma taxa de ticks de execução.
@@ -745,7 +745,7 @@ class Track {
 		  this.cursor += 2;
 
 			this.onInstrument(this.instrument);
-		  continue;
+		  break;
 		}
 
     // Define um índice de instrumento para uso.
@@ -756,7 +756,7 @@ class Track {
 		  this.cursor += 1;
 
 			this.onInstrument(this.instrument);
-		  continue;
+		  break;
 		}
   
 		// Solicita o toque de uma nota do instrumento.
