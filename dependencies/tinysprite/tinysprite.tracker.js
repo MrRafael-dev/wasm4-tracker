@@ -2,7 +2,7 @@
  * @name TinySprite Track Script for WASM-4
  * @author Mr.Rafael
  * @license MIT
- * @version 1.0.8
+ * @version 1.0.9
  *
  * @description
  * Funções que ajudam a entender e criar trilhas sonoras para a classe `Track`.
@@ -653,21 +653,21 @@ class Track {
 		if(opcode === Opcode.SET) {
 		  this.register = loadu8(offset + 1);
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
   
 		// Adiciona um valor para o registrador.
 		if(opcode === Opcode.ADD) {
 		  this.register += loadu8(offset + 1);
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
   
 		// Subtrai um valor do registrador.
 		if(opcode === Opcode.SUB) {
 		  this.register -= loadu8(offset + 1);
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
   
 		// Compara se o registrador é igual ao valor.
@@ -675,7 +675,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register === value;
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
   
 		// Compara se o registrador é menor que o valor.
@@ -683,7 +683,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register < value;
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
   
 		// Compara se o registrador é maior que o valor.
@@ -691,7 +691,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register > value;
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
   
 		// Compara se o registrador é menor ou igual que o valor.
@@ -699,7 +699,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register <= value;
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
   
 		// Compara se o registrador é maior ou igual que o valor.
@@ -707,7 +707,7 @@ class Track {
 		  const value = loadu8(offset + 1);
 		  this.accumulator = this.register >= value;
 		  this.cursor += 2;
-		  break;
+		  continue;
 		}
   
 		// Define uma taxa de ticks de execução.
